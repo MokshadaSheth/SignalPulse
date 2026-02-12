@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Sparkles, Clock, TrendingUp, Layers, Info } from "lucide-react";
+import { Shield, Sparkles, Clock, TrendingUp, Layers } from "lucide-react";
+import LandingPage from "@/components/LandingPage";
 import RoleSelection from "@/components/RoleSelection";
 import EmployeeOnboarding from "@/components/EmployeeOnboarding";
 import FocusRing from "@/components/FocusRing";
@@ -14,11 +15,19 @@ import ManagerView from "@/components/ManagerView";
 import AIInsights from "@/components/AIInsights";
 import RoleContext from "@/components/RoleContext";
 import DashboardNav from "@/components/DashboardNav";
+import ThemeToggle from "@/components/ThemeToggle";
 
-type AppState = "role-select" | "onboarding" | "dashboard";
+type AppState = "landing" | "role-select" | "onboarding" | "dashboard";
+
+const pageTransition = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -12 },
+  transition: { duration: 0.4, ease: "easeOut" as const },
+};
 
 const Index = () => {
-  const [appState, setAppState] = useState<AppState>("role-select");
+  const [appState, setAppState] = useState<AppState>("landing");
   const [userRole, setUserRole] = useState<"employee" | "manager">("employee");
   const [profile, setProfile] = useState({ role: "developer", workStyle: "balanced" });
   const [activeTab, setActiveTab] = useState("focus");
@@ -39,18 +48,18 @@ const Index = () => {
     setActiveTab("focus");
   };
 
-  // Show role selection
+  if (appState === "landing") {
+    return <LandingPage onGetStarted={() => setAppState("role-select")} />;
+  }
+
   if (appState === "role-select") {
     return <RoleSelection onSelect={handleRoleSelect} />;
   }
 
-  // Show employee onboarding
   if (appState === "onboarding") {
     return <EmployeeOnboarding onComplete={handleOnboardingComplete} />;
   }
 
-  // Manager-only tabs
-  const managerTabs = ["manager"] as const;
   const isManagerOnly = userRole === "manager";
 
   return (
@@ -78,6 +87,7 @@ const Index = () => {
                 <Shield className="w-3.5 h-3.5" />
                 <span>Privacy by architecture</span>
               </div>
+              <ThemeToggle />
               <button
                 onClick={() => setAppState("role-select")}
                 className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary hover:bg-primary/20 transition-colors"
@@ -103,14 +113,7 @@ const Index = () => {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         <AnimatePresence mode="wait">
           {activeTab === "focus" && (
-            <motion.div
-              key="focus"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6"
-            >
+            <motion.div key="focus" {...pageTransition} className="space-y-6">
               {/* Focus Score Hero */}
               <div className="sp-card-glow flex flex-col md:flex-row items-center gap-8 py-8">
                 <div className="flex-shrink-0">
@@ -123,9 +126,9 @@ const Index = () => {
                   </div>
                   <motion.p
                     className="text-sm bg-sp-green-soft text-sp-green rounded-full px-4 py-2 inline-block"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.2 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
                   >
                     ✨ You were most focused between 10:30 – 12:00
                   </motion.p>
@@ -133,51 +136,27 @@ const Index = () => {
                     className="text-xs text-muted-foreground italic"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1.5 }}
+                    transition={{ delay: 1.2 }}
                   >
                     Fragmentation is contextual. Task completion matters most.
                   </motion.p>
                 </div>
               </div>
 
-              {/* Role Context */}
               <RoleContext role={profile.role} />
 
-              {/* Metrics Row */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <MetricCard
-                  icon={<TrendingUp className="w-3.5 h-3.5" />}
-                  label="Deep Work"
-                  value="3h 45m"
-                  subtitle="65% of active time"
-                  variant="green"
-                  delay={0.1}
-                />
-                <MetricCard
-                  icon={<Layers className="w-3.5 h-3.5" />}
-                  label="Fragmented"
-                  value="1h 20m"
-                  subtitle="Context-appropriate for your role"
-                  variant="amber"
-                  delay={0.2}
-                />
-                <MetricCard
-                  icon={<Clock className="w-3.5 h-3.5" />}
-                  label="Idle Time"
-                  value="0h 55m"
-                  subtitle="Breaks are healthy"
-                  variant="blue"
-                  delay={0.3}
-                />
+                <MetricCard icon={<TrendingUp className="w-3.5 h-3.5" />} label="Deep Work" value="3h 45m" subtitle="65% of active time" variant="green" delay={0.1} />
+                <MetricCard icon={<Layers className="w-3.5 h-3.5" />} label="Fragmented" value="1h 20m" subtitle="Context-appropriate for your role" variant="amber" delay={0.2} />
+                <MetricCard icon={<Clock className="w-3.5 h-3.5" />} label="Idle Time" value="0h 55m" subtitle="Breaks are healthy" variant="blue" delay={0.3} />
               </div>
 
-              {/* Timeline */}
               <WorkPatternTimeline />
             </motion.div>
           )}
 
           {activeTab === "patterns" && (
-            <motion.div key="patterns" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+            <motion.div key="patterns" {...pageTransition} className="space-y-6">
               <RoleContext role={profile.role} />
               <WorkPatternTimeline />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -189,37 +168,37 @@ const Index = () => {
           )}
 
           {activeTab === "nudges" && (
-            <motion.div key="nudges" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div key="nudges" {...pageTransition}>
               <NudgeCard />
             </motion.div>
           )}
 
           {activeTab === "tasks" && (
-            <motion.div key="tasks" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div key="tasks" {...pageTransition}>
               <TaskList />
             </motion.div>
           )}
 
           {activeTab === "timeblock" && (
-            <motion.div key="timeblock" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div key="timeblock" {...pageTransition}>
               <TimeBlockCalendar />
             </motion.div>
           )}
 
           {activeTab === "wellness" && (
-            <motion.div key="wellness" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div key="wellness" {...pageTransition}>
               <WellnessReminder />
             </motion.div>
           )}
 
           {activeTab === "insights" && (
-            <motion.div key="insights" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div key="insights" {...pageTransition}>
               <AIInsights />
             </motion.div>
           )}
 
           {activeTab === "manager" && (
-            <motion.div key="manager" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div key="manager" {...pageTransition}>
               <ManagerView />
             </motion.div>
           )}
