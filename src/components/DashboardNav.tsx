@@ -1,22 +1,29 @@
 import { motion } from "framer-motion";
-import { Activity, BarChart3, Bell, ListTodo, Calendar, Heart, Users } from "lucide-react";
+import { Activity, BarChart3, Bell, ListTodo, Calendar, Heart, Users, Brain } from "lucide-react";
 
 interface DashboardNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  isManager?: boolean;
 }
 
-const tabs = [
+const employeeTabs = [
   { id: "focus", label: "Focus", icon: Activity },
   { id: "patterns", label: "Patterns", icon: BarChart3 },
   { id: "nudges", label: "Nudges", icon: Bell },
   { id: "tasks", label: "Tasks", icon: ListTodo },
   { id: "timeblock", label: "Time Blocks", icon: Calendar },
   { id: "wellness", label: "Wellness", icon: Heart },
-  { id: "manager", label: "Manager", icon: Users },
+  { id: "insights", label: "AI Insights", icon: Brain },
 ];
 
-const DashboardNav = ({ activeTab, onTabChange }: DashboardNavProps) => {
+const managerTabs = [
+  { id: "manager", label: "Team Dashboard", icon: Users },
+];
+
+const DashboardNav = ({ activeTab, onTabChange, isManager = false }: DashboardNavProps) => {
+  const tabs = isManager ? managerTabs : employeeTabs;
+
   return (
     <nav className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
       {tabs.map((tab) => {
