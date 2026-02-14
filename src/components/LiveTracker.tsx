@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Globe, ArrowLeftRight, Clock, Wifi, WifiOff, Activity } from "lucide-react";
 import { useLiveMetrics } from "@/hooks/useLiveMetrics";
 import { useSignalPulseData } from "@/hooks/useSignalPulseData";
@@ -32,15 +33,29 @@ const getCategoryBarColor = (cat: string) => {
 };
 
 const LiveTracker = () => {
+  const [dismissedNudge, setDismissedNudge] = useState(false);
   const { metrics, backendConnected } = useLiveMetrics("EMP001");
   const { data } = useSignalPulseData();
 
-  // Use live backend data if available, otherwise fall back to JSON
+  // Real-time metrics from backend - always initialized to 0 values on load
+  const switchCount = metrics.windowSwitchCount;
+  const activeTime = metrics.activeTimeToday;
+  const focusScore = metrics.focusScore;
+  const uniqueWindows = metrics.uniqueWindowsCount;
+  
+  // Legacy session data from JSON (fallback only)
   const sessions = data?.sessions ?? [];
-  const stats = data?.stats;
-  const switchCount = backendConnected ? (metrics?.tabSwitchCount ?? 0) : (stats?.switches ?? 0);
-  const activeDomain = backendConnected ? metrics?.activeDomain : null;
-  const activeCategory = backendConnected ? metrics?.activeCategory : null;
+
+  // Show nudge when switches exceed 15 (unless dismissed)
+  const showFragmentationNudge = switchCount > 15 && !dismissedNudge;
+
+  const handleDismissNudge = () => {
+    setDismissedNudge(true);
+    // Reset nudge if switches go down below 15
+    if (switchCount <= 15) {
+      setDismissedNudge(false);
+    }
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
@@ -57,7 +72,7 @@ const LiveTracker = () => {
         {backendConnected ? (
           <>
             <Wifi className="w-4 h-4" />
-            <span className="font-medium">Live Tracking Active</span>
+            <span className="font-medium">Live Window Tracking Active</span>
             <motion.div
               className="w-2 h-2 rounded-full bg-sp-green ml-auto"
               animate={{ opacity: [1, 0.3, 1] }}
@@ -77,28 +92,27 @@ const LiveTracker = () => {
         {[
           {
             icon: <ArrowLeftRight className="w-4 h-4" />,
-            label: "Tab Switches",
+            label: "Window Switches",
             value: String(switchCount),
             badge: "sp-badge-amber",
           },
           {
-            icon: <Globe className="w-4 h-4" />,
-            label: "Active Domain",
-            value: activeDomain ?? "—",
-            badge: activeCategory ? getCategoryColor(activeCategory).split(" ")[1] : "sp-badge-blue",
-            small: true,
-          },
-          {
             icon: <Clock className="w-4 h-4" />,
-            label: "Total Time",
-            value: formatDuration(backendConnected ? (metrics?.totalTimeToday ?? 0) : (stats?.totalTime ?? 0)),
+            label: "Active Time",
+            value: formatDuration(activeTime),
             badge: "sp-badge-blue",
           },
           {
             icon: <Activity className="w-4 h-4" />,
             label: "Focus Score",
-            value: `${backendConnected ? (metrics?.focusScore ?? 0) : (stats?.focusScore ?? 0)}%`,
+            value: `${focusScore}%`,
             badge: "sp-badge-green",
+          },
+          {
+            icon: <Globe className="w-4 h-4" />,
+            label: "Unique Windows",
+            value: String(uniqueWindows),
+            badge: "sp-badge-purple",
           },
         ].map((m, i) => (
           <motion.div
@@ -109,11 +123,38 @@ const LiveTracker = () => {
             transition={{ delay: 0.1 + i * 0.08 }}
           >
             <span className={`${m.badge} mx-auto mb-2`}>{m.icon}</span>
-            <p className={`sp-stat-value ${m.small ? "text-sm" : "text-2xl"} truncate`}>{m.value}</p>
+            <p className="sp-stat-value text-2xl">{m.value}</p>
             <p className="sp-stat-label">{m.label}</p>
           </motion.div>
         ))}
       </div>
+
+      {/* Fragmentation Nudge - triggers when switches > 15 */}
+      {showFragmentationNudge && (
+        <motion.div
+          initial={{ opacity: 0, y: 12, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -12 }}
+          className="sp-card border-sp-amber/30 bg-gradient-to-r from-sp-amber-soft to-sp-amber-soft/50 relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-sp-amber/5 rounded-full -mr-16 -mt-16" />
+          <div className="relative flex items-start gap-4">
+            <div className="text-sp-amber text-2xl">⚡</div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground mb-1">High Context-Switching Detected</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                You've switched windows {switchCount} times. Consider taking a break or grouping similar tasks together to maintain focus.
+              </p>
+              <button 
+                onClick={handleDismissNudge}
+                className="text-xs px-3 py-1.5 rounded-full bg-muted text-foreground hover:bg-muted/80 transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Session Timeline */}
       <motion.div
@@ -174,7 +215,7 @@ const LiveTracker = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        This data is private to you. Your manager can only see anonymized category trends.
+        This data is private to you. Your manager can only see anonymized trends.
       </motion.p>
     </motion.div>
   );

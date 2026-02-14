@@ -15,6 +15,7 @@ import WellnessReminder from "@/components/WellnessReminder";
 import ManagerView from "@/components/ManagerView";
 import AIInsights from "@/components/AIInsights";
 import LiveTracker from "@/components/LiveTracker";
+import LiveWindowActivity from "@/components/LiveWindowActivity";
 import RoleContext from "@/components/RoleContext";
 import DashboardNav from "@/components/DashboardNav";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -158,8 +159,9 @@ const Index = () => {
           )}
 
           {activeTab === "tracker" && (
-            <motion.div key="tracker" {...pageTransition}>
+            <motion.div key="tracker" {...pageTransition} className="space-y-6">
               <LiveTracker />
+              <LiveWindowActivity />
             </motion.div>
           )}
 

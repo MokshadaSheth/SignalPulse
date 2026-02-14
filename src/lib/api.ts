@@ -1,19 +1,42 @@
 /**
- * Signal Pulse API client.
- * Polls FastAPI backend with automatic fallback to local JSON data.
+ * Signal Pulse API client - Anonymous Window Switching Tracker
+ * Tracks window activity (no app names), generates ML-ready data
  */
 
 const API_BASE = "http://localhost:8000/api";
 
 export interface LiveMetrics {
   employeeId: string;
-  activeDomain: string | null;
-  activeCategory: string | null;
-  tabSwitchCount: number;
+  windowSwitchCount: number;
   sessionStartTime: number | null;
   currentSessionDuration: number;
-  totalTimeToday: number;
+  activeTimeToday: number;
+  idleTimeToday: number;
   focusScore: number;
+  uniqueWindowsCount: number;
+  fragmentationScore: number;
+  recentSwitches: Array<{
+    switchTime: number;
+    windowHash: string;
+    activeDuration: number;
+  }>;
+}
+
+export interface MLDataPoint {
+  employeeId: string;
+  date: string;
+  timeWindowStart: string;
+  role: string;
+  activeSeconds: number;
+  idleSeconds: number;
+  windowSwitchCount: number;
+  uniqueWindowCount: number;
+  longestContinuousActiveSeconds: number;
+  taskPresent: boolean;
+  taskCompleted: boolean;
+  fragmentationScore: number;
+  focusScore: number;
+  timestamp: number;
 }
 
 export interface TeamStats {
@@ -38,6 +61,18 @@ async function apiFetch<T>(path: string): Promise<T | null> {
 
 export async function fetchEmployeeLive(employeeId: string): Promise<LiveMetrics | null> {
   return apiFetch<LiveMetrics>(`/employee/${employeeId}/live`);
+}
+
+export async function fetchEmployeeMLData(employeeId: string, limit: number = 168) {
+  return apiFetch<{ employeeId: string; dataPoints: MLDataPoint[] }>(
+    `/employee/${employeeId}/ml-data?limit=${limit}`
+  );
+}
+
+export async function setEmployeeRole(employeeId: string, role: string) {
+  return apiFetch<{ status: string; employeeId: string; role: string }>(
+    `/employee/${employeeId}/set-role?role=${role}`
+  );
 }
 
 export async function fetchEmployeeStats(employeeId: string) {

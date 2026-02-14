@@ -27,6 +27,7 @@ def load_employee(employee_id: str) -> EmployeeData:
         try:
             with open(path, "r") as f:
                 data = json.load(f)
+            # parse_obj handles both alias (snake_case) and field names (camelCase)
             return EmployeeData(**data)
         except (json.JSONDecodeError, Exception):
             pass
@@ -41,7 +42,8 @@ def save_employee(data: EmployeeData):
     fd, tmp_path = tempfile.mkstemp(dir=DATA_DIR, suffix=".tmp")
     try:
         with os.fdopen(fd, "w") as f:
-            json.dump(data.model_dump(), f, indent=2)
+            # Serialize with aliases (snake_case) for ML data fields
+            json.dump(data.model_dump(by_alias=True), f, indent=2)
         os.replace(tmp_path, path)  # Atomic on POSIX and Windows
     except Exception:
         if os.path.exists(tmp_path):
