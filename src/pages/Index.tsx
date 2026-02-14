@@ -13,6 +13,7 @@ import TimeBlockCalendar from "@/components/TimeBlockCalendar";
 import WellnessReminder from "@/components/WellnessReminder";
 import ManagerView from "@/components/ManagerView";
 import AIInsights from "@/components/AIInsights";
+import LiveTracker from "@/components/LiveTracker";
 import RoleContext from "@/components/RoleContext";
 import DashboardNav from "@/components/DashboardNav";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -152,6 +153,12 @@ const Index = () => {
               </div>
 
               <WorkPatternTimeline />
+            </motion.div>
+          )}
+
+          {activeTab === "tracker" && (
+            <motion.div key="tracker" {...pageTransition}>
+              <LiveTracker />
             </motion.div>
           )}
 
