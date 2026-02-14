@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Shield, Users, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowRight, Clock, Layers, Activity, FileJson, PieChart } from "lucide-react";
+import { Shield, Users, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowRight, Clock, Layers, Activity, PieChart, Brain } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import JsonEditor from "@/components/JsonEditor";
+import PeakHoursInsight from "@/components/PeakHoursInsight";
 import { useSignalPulseData } from "@/hooks/useSignalPulseData";
 import type { SignalPulseData, Session } from "@/hooks/useSignalPulseData";
 
@@ -55,12 +55,12 @@ const computeAggregatedStats = (data: SignalPulseData) => {
 
 const managerTabs = [
   { id: "dashboard", label: "Dashboard", icon: PieChart },
-  { id: "editor", label: "Data Editor", icon: FileJson },
+  { id: "ai-insights", label: "AI Insights", icon: Brain },
 ];
 
 const ManagerView = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const { data, loading, updateFromJson, resetData } = useSignalPulseData();
+  const { data, loading } = useSignalPulseData();
 
   if (loading) {
     return (
@@ -119,8 +119,8 @@ const ManagerView = () => {
         <DashboardContent data={data} agg={agg} />
       )}
 
-      {activeTab === "editor" && (
-        <JsonEditor data={data} onSave={updateFromJson} onReset={resetData} />
+      {activeTab === "ai-insights" && (
+        <PeakHoursInsight />
       )}
     </motion.div>
   );

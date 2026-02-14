@@ -14,6 +14,7 @@ from models import EmployeeData, LiveMetrics, TeamStats, Session, Stats
 from persistence import load_employee, save_employee, list_all_employees
 from tracker import TabTracker
 from categorizer import categorize_domain
+from peak_hours_api import router as peak_hours_router
 
 app = FastAPI(
     title="Signal Pulse API",
@@ -34,6 +35,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(peak_hours_router)
 
 # Active trackers (one per employee)
 trackers: Dict[str, TabTracker] = {}

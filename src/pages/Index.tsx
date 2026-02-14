@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import PeakHoursInsight from "@/components/PeakHoursInsight";
 import { Shield, Sparkles, Clock, TrendingUp, Layers } from "lucide-react";
 import LandingPage from "@/components/LandingPage";
 import RoleSelection from "@/components/RoleSelection";
@@ -207,6 +208,12 @@ const Index = () => {
           {activeTab === "manager" && (
             <motion.div key="manager" {...pageTransition}>
               <ManagerView />
+            </motion.div>
+          )}
+
+          {activeTab === "ai-insights-mgr" && (
+            <motion.div key="ai-insights-mgr" {...pageTransition}>
+              <PeakHoursInsight />
             </motion.div>
           )}
         </AnimatePresence>
