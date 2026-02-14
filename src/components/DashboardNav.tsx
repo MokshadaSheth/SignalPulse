@@ -20,6 +20,7 @@ const employeeTabs = [
 
 const managerTabs = [
   { id: "manager", label: "Team Dashboard", icon: Users },
+  { id: "ai-insights-mgr", label: "AI Insights", icon: Brain },
 ];
 
 const DashboardNav = ({ activeTab, onTabChange, isManager = false }: DashboardNavProps) => {
