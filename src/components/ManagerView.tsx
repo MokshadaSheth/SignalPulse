@@ -1,39 +1,85 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Shield, Users, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowRight } from "lucide-react";
+import { Shield, Users, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowRight, Clock, Layers, Activity, FileJson, PieChart } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+import JsonEditor from "@/components/JsonEditor";
+import { useSignalPulseData } from "@/hooks/useSignalPulseData";
+import type { SignalPulseData, Session } from "@/hooks/useSignalPulseData";
 
-const teamHeatmap = [
-  { period: "9–10", focus: 45, label: "Low" },
-  { period: "10–11", focus: 82, label: "High" },
-  { period: "11–12", focus: 78, label: "High" },
-  { period: "12–1", focus: 30, label: "Break" },
-  { period: "1–2", focus: 60, label: "Medium" },
-  { period: "2–3", focus: 75, label: "High" },
-  { period: "3–4", focus: 55, label: "Medium" },
-  { period: "4–5", focus: 40, label: "Low" },
-];
-
-const getHeatColor = (focus: number) => {
-  if (focus >= 70) return "bg-sp-green";
-  if (focus >= 50) return "bg-sp-amber";
-  return "bg-sp-blue";
+const formatDuration = (ms: number) => {
+  const mins = Math.round(ms / 60000);
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return `${hrs}h ${rem}m`;
 };
 
-const roleInsights = [
-  { role: "Developers", fragmentation: "42%", completion: "94%", insight: "High switching but strong delivery" },
-  { role: "Designers", fragmentation: "28%", completion: "88%", insight: "Deep focus, fewer context switches" },
-  { role: "Marketing", fragmentation: "61%", completion: "91%", insight: "Role naturally involves high switching" },
+const getCategoryColor = (cat: string) => {
+  switch (cat) {
+    case "work": return "sp-badge-green";
+    case "communication": return "sp-badge-blue";
+    case "distraction": return "sp-badge-amber";
+    default: return "sp-badge-purple";
+  }
+};
+
+const getCategoryBarColor = (cat: string) => {
+  switch (cat) {
+    case "work": return "bg-sp-green";
+    case "communication": return "bg-sp-blue";
+    case "distraction": return "bg-sp-amber";
+    default: return "bg-sp-purple";
+  }
+};
+
+const computeAggregatedStats = (data: SignalPulseData) => {
+  const { stats, sessions } = data;
+  
+  // Category breakdown
+  const categoryTotals: Record<string, number> = {};
+  sessions.forEach((s) => {
+    categoryTotals[s.category] = (categoryTotals[s.category] || 0) + s.duration;
+  });
+  
+  // Domain aggregation (for "other" insight, no domain names shown to manager)
+  const categoryCount: Record<string, number> = {};
+  sessions.forEach((s) => {
+    categoryCount[s.category] = (categoryCount[s.category] || 0) + 1;
+  });
+
+  const completionRate = stats.focusScore > 50 ? 91 : Math.max(45, stats.focusScore + 40);
+  const fragmentation = stats.switches > 15 ? Math.min(65, stats.switches * 3) : stats.switches * 2;
+
+  return { categoryTotals, categoryCount, completionRate, fragmentation, stats };
+};
+
+const managerTabs = [
+  { id: "dashboard", label: "Dashboard", icon: PieChart },
+  { id: "editor", label: "Data Editor", icon: FileJson },
 ];
 
 const ManagerView = () => {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const { data, loading, updateFromJson, resetData } = useSignalPulseData();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
+          <Activity className="w-6 h-6 text-primary" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div className="sp-card text-center py-10 text-muted-foreground">No data available. Please upload a JSON file.</div>;
+  }
+
+  const agg = computeAggregatedStats(data);
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-5"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="space-y-5">
       {/* Privacy Banner */}
       <motion.div
         className="flex items-center gap-3 rounded-2xl bg-sp-green-soft border border-sp-green/20 p-4"
@@ -48,20 +94,63 @@ const ManagerView = () => {
         </div>
       </motion.div>
 
-      {/* Team Metrics */}
+      {/* Manager Sub-Tabs */}
+      <nav className="flex gap-1 border-b border-border pb-1">
+        {managerTabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative flex items-center gap-2 rounded-t-lg px-4 py-2 text-sm font-medium transition-colors ${
+                isActive
+                  ? "text-primary bg-card border border-b-0 border-border"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      {activeTab === "dashboard" && (
+        <DashboardContent data={data} agg={agg} />
+      )}
+
+      {activeTab === "editor" && (
+        <JsonEditor data={data} onSave={updateFromJson} onReset={resetData} />
+      )}
+    </motion.div>
+  );
+};
+
+interface DashboardContentProps {
+  data: SignalPulseData;
+  agg: ReturnType<typeof computeAggregatedStats>;
+}
+
+const DashboardContent = ({ data, agg }: DashboardContentProps) => {
+  const { categoryTotals, categoryCount, completionRate, fragmentation, stats } = agg;
+  const totalDuration = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+      {/* Team Metrics from JSON */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { icon: <Users className="w-4 h-4" />, label: "Team Size", value: "12", badge: "sp-badge-blue" },
-          { icon: <TrendingUp className="w-4 h-4" />, label: "Avg Focus", value: "68", badge: "sp-badge-green" },
-          { icon: <AlertTriangle className="w-4 h-4" />, label: "Fragmentation", value: "34%", badge: "sp-badge-amber" },
-          { icon: <CheckCircle2 className="w-4 h-4" />, label: "Task Completion", value: "91%", badge: "sp-badge-green" },
+          { icon: <Clock className="w-4 h-4" />, label: "Total Time", value: formatDuration(stats.totalTime), badge: "sp-badge-blue" },
+          { icon: <TrendingUp className="w-4 h-4" />, label: "Focus Score", value: `${stats.focusScore}%`, badge: stats.focusScore > 50 ? "sp-badge-green" : "sp-badge-amber" },
+          { icon: <AlertTriangle className="w-4 h-4" />, label: "Context Switches", value: `${stats.switches}`, badge: "sp-badge-amber" },
+          { icon: <CheckCircle2 className="w-4 h-4" />, label: "Task Completion", value: `${completionRate}%`, badge: "sp-badge-green" },
         ].map((m, i) => (
           <motion.div
             key={m.label}
             className="sp-card text-center"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + i * 0.08 }}
+            transition={{ delay: 0.1 + i * 0.08 }}
           >
             <span className={`${m.badge} mx-auto mb-2`}>{m.icon}</span>
             <p className="sp-stat-value text-2xl">{m.value}</p>
@@ -70,7 +159,7 @@ const ManagerView = () => {
         ))}
       </div>
 
-      {/* Correlation Card - KEY differentiator */}
+      {/* Outcome vs Activity Correlation */}
       <motion.div
         className="sp-card-glow border-primary/20"
         initial={{ opacity: 0, y: 16 }}
@@ -81,82 +170,102 @@ const ManagerView = () => {
           <BarChart3 className="w-4 h-4 text-primary" />
           <h3 className="text-base font-semibold">Outcome vs Activity — The Real Story</h3>
         </div>
-        <div className="rounded-xl bg-sp-green-soft border border-sp-green/20 p-4">
-          <p className="text-sm font-medium text-sp-green">
-            ✅ High fragmentation detected, but delivery remains strong.
+        <div className={`rounded-xl p-4 ${completionRate >= 70 ? "bg-sp-green-soft border border-sp-green/20" : "bg-sp-amber-soft border border-sp-amber/20"}`}>
+          <p className={`text-sm font-medium ${completionRate >= 70 ? "text-sp-green" : "text-sp-amber"}`}>
+            {completionRate >= 70 ? "✅" : "⚠️"} {fragmentation > 30 ? "High" : "Low"} fragmentation detected, {completionRate >= 70 ? "but delivery remains strong" : "and delivery needs attention"}.
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Task completion rate is 91% despite 34% average fragmentation. Context-switching is role-appropriate and doesn't indicate inefficiency.
+            Task completion rate is {completionRate}% {fragmentation > 30 ? `despite ${fragmentation}% average fragmentation` : `with ${fragmentation}% fragmentation`}. {completionRate >= 70 ? "Context-switching is role-appropriate and doesn't indicate inefficiency." : "Consider structural changes to improve focus."}
           </p>
         </div>
       </motion.div>
 
-      {/* Focus Heatmap */}
+      {/* Category Breakdown */}
       <motion.div
         className="sp-card"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <h3 className="text-base font-semibold mb-1">Team Focus Heatmap</h3>
-        <p className="sp-stat-label mb-4">Aggregated focus intensity — no individual data</p>
+        <h3 className="text-base font-semibold mb-1">Activity Category Breakdown</h3>
+        <p className="sp-stat-label mb-4">Aggregated by category — no domain names visible</p>
 
-        <div className="grid grid-cols-8 gap-2">
-          {teamHeatmap.map((slot, i) => (
-            <Tooltip key={slot.period}>
-              <TooltipTrigger asChild>
+        <div className="space-y-3">
+          {Object.entries(categoryTotals)
+            .sort(([, a], [, b]) => b - a)
+            .map(([cat, duration], i) => {
+              const pct = totalDuration > 0 ? Math.round((duration / totalDuration) * 100) : 0;
+              return (
                 <motion.div
-                  className="flex flex-col items-center gap-1.5"
-                  initial={{ opacity: 0, scaleY: 0 }}
-                  animate={{ opacity: 1, scaleY: 1 }}
-                  transition={{ delay: 0.5 + i * 0.05 }}
+                  key={cat}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.45 + i * 0.06 }}
                 >
-                  <div
-                    className={`w-full rounded-lg ${getHeatColor(slot.focus)} transition-all cursor-pointer hover:opacity-80`}
-                    style={{ height: `${Math.max(slot.focus * 0.8, 20)}px`, opacity: 0.7 }}
-                  />
-                  <span className="text-[10px] text-muted-foreground">{slot.period}</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className={`${getCategoryColor(cat)} text-xs capitalize`}>{cat}</span>
+                      <span className="text-xs text-muted-foreground">{categoryCount[cat]} sessions</span>
+                    </div>
+                    <span className="text-sm font-medium">{formatDuration(duration)} ({pct}%)</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <motion.div
+                      className={`h-full rounded-full ${getCategoryBarColor(cat)}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ delay: 0.5 + i * 0.06, duration: 0.6 }}
+                      style={{ opacity: 0.7 }}
+                    />
+                  </div>
                 </motion.div>
-              </TooltipTrigger>
-              <TooltipContent className="text-xs">
-                <p className="font-medium">{slot.label} Focus</p>
-                <p>Team Score: {slot.focus}%</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
+              );
+            })}
         </div>
       </motion.div>
 
-      {/* Role-Wise Insights */}
+      {/* Session Timeline (anonymized) */}
       <motion.div
         className="sp-card"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        <h3 className="text-base font-semibold mb-1">Role-Based Team Insights</h3>
-        <p className="sp-stat-label mb-4">Compare roles, not people</p>
-        <div className="space-y-2">
-          {roleInsights.map((r, i) => (
-            <motion.div
-              key={r.role}
-              className="flex items-center gap-4 rounded-xl border border-border/50 p-3"
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.55 + i * 0.06 }}
-            >
-              <span className="text-sm font-semibold w-24">{r.role}</span>
-              <div className="flex-1 flex items-center gap-3">
-                <span className="sp-badge-amber text-xs">Frag: {r.fragmentation}</span>
-                <span className="sp-badge-green text-xs">Done: {r.completion}</span>
-              </div>
-              <span className="text-xs text-muted-foreground hidden sm:block">{r.insight}</span>
-            </motion.div>
+        <h3 className="text-base font-semibold mb-1">Session Flow (Anonymized)</h3>
+        <p className="sp-stat-label mb-4">Categories only — no individual identification possible</p>
+        <div className="flex gap-1 overflow-x-auto pb-2">
+          {data.sessions.map((s, i) => {
+            const width = Math.max(Math.round(s.duration / 5000), 4);
+            return (
+              <Tooltip key={s.id}>
+                <TooltipTrigger asChild>
+                  <motion.div
+                    className={`h-8 rounded ${getCategoryBarColor(s.category)} cursor-pointer hover:opacity-100 transition-opacity`}
+                    style={{ width: `${width}px`, minWidth: "4px", opacity: 0.6 }}
+                    initial={{ scaleY: 0 }}
+                    animate={{ scaleY: 1 }}
+                    transition={{ delay: 0.55 + i * 0.02 }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="text-xs">
+                  <p className="font-medium capitalize">{s.category}</p>
+                  <p>Duration: {formatDuration(s.duration)}</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
+        <div className="flex gap-4 mt-3 flex-wrap">
+          {["work", "communication", "distraction", "other"].map((cat) => (
+            <div key={cat} className="flex items-center gap-1.5">
+              <div className={`w-3 h-3 rounded ${getCategoryBarColor(cat)}`} style={{ opacity: 0.6 }} />
+              <span className="text-xs text-muted-foreground capitalize">{cat}</span>
+            </div>
           ))}
         </div>
       </motion.div>
 
-      {/* Suggestions */}
+      {/* Settings Overview */}
       <motion.div
         className="sp-card border-sp-blue/20 bg-sp-blue-soft"
         initial={{ opacity: 0, y: 16 }}
@@ -166,9 +275,10 @@ const ManagerView = () => {
         <h3 className="text-sm font-semibold mb-3">Suggested Structural Changes</h3>
         <div className="space-y-2">
           {[
-            "Introduce a no-meeting hour 10:00–11:00 when team focus naturally peaks",
-            "Consider async standup for Marketing — their fragmentation is role-appropriate",
-            "Schedule a team wellness check-in — it improves both morale and focus",
+            stats.switches > 15 ? "High context-switching detected — consider introducing no-meeting hours" : "Context-switching is within normal range",
+            stats.distractionTime > stats.workTime ? "Distraction time exceeds work time — team may benefit from focus blocks" : "Healthy work-to-distraction ratio",
+            stats.deepWorkSessions === 0 ? "No deep work sessions recorded — encourage protected deep work blocks" : `${stats.deepWorkSessions} deep work sessions detected — maintain current patterns`,
+            `Focus mode is ${data.settings.focusModeActive ? "enabled" : "disabled"} with ${data.settings.focusDuration}min duration`,
           ].map((s, i) => (
             <div key={i} className="flex items-start gap-2">
               <ArrowRight className="w-3.5 h-3.5 text-sp-blue mt-0.5 flex-shrink-0" />
