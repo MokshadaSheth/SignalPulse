@@ -55,7 +55,6 @@ const computeAggregatedStats = (data: SignalPulseData) => {
 
 const managerTabs = [
   { id: "dashboard", label: "Dashboard", icon: PieChart },
-  { id: "ai-insights", label: "AI Insights", icon: Brain },
 ];
 
 const ManagerView = () => {
