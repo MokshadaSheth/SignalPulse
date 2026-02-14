@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Activity, BarChart3, Bell, ListTodo, Calendar, Heart, Users, Brain } from "lucide-react";
+import { Activity, BarChart3, Bell, ListTodo, Calendar, Heart, Users, Brain, MonitorSmartphone } from "lucide-react";
 
 interface DashboardNavProps {
   activeTab: string;
@@ -9,6 +9,7 @@ interface DashboardNavProps {
 
 const employeeTabs = [
   { id: "focus", label: "Focus", icon: Activity },
+  { id: "tracker", label: "Tab Switches", icon: MonitorSmartphone },
   { id: "patterns", label: "Patterns", icon: BarChart3 },
   { id: "nudges", label: "Nudges", icon: Bell },
   { id: "tasks", label: "Tasks", icon: ListTodo },
