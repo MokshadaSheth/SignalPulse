@@ -1,0 +1,351 @@
+{
+  "exportDate": "2026-02-14T16:38:54.279Z",
+  "sessions": [
+    {
+      "category": "distraction",
+      "date": "2026-02-14",
+      "domain": "netflix.com",
+      "duration": 4365,
+      "endTime": 1771085617610,
+      "id": "1771085617610-0.5604690263422207",
+      "startTime": 1771085613245,
+      "timestamp": 1771085617611
+    },
+    {
+      "category": "distraction",
+      "date": "2026-02-14",
+      "domain": "youtube.com",
+      "duration": 9116,
+      "endTime": 1771085631275,
+      "id": "1771085631276-0.19881579998030263",
+      "startTime": 1771085622159,
+      "timestamp": 1771085631277
+    },
+    {
+      "category": "distraction",
+      "date": "2026-02-14",
+      "domain": "netflix.com",
+      "duration": 144129,
+      "endTime": 1771085776746,
+      "id": "1771085776746-0.629514216575143",
+      "startTime": 1771085632617,
+      "timestamp": 1771085776746
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "gemini.google.com",
+      "duration": 7674,
+      "endTime": 1771085786506,
+      "id": "1771085786506-0.21901916994962944",
+      "startTime": 1771085778832,
+      "timestamp": 1771085786506
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "classroom.google.com",
+      "duration": 5001,
+      "endTime": 1771085799555,
+      "id": "1771085799555-0.33370158145408535",
+      "startTime": 1771085794554,
+      "timestamp": 1771085799555
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "gemini.google.com",
+      "duration": 46327,
+      "endTime": 1771085854255,
+      "id": "1771085854256-0.6410808327024168",
+      "startTime": 1771085807928,
+      "timestamp": 1771085854256
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "photos.google.com",
+      "duration": 11765,
+      "endTime": 1771085866020,
+      "id": "1771085866020-0.25431986747123847",
+      "startTime": 1771085854255,
+      "timestamp": 1771085866020
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "photos.google.com",
+      "duration": 6732,
+      "endTime": 1771085882580,
+      "id": "1771085882580-0.19416266177455233",
+      "startTime": 1771085875848,
+      "timestamp": 1771085882580
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "gemini.google.com",
+      "duration": 40195,
+      "endTime": 1771085922775,
+      "id": "1771085922775-0.8169484005303046",
+      "startTime": 1771085882580,
+      "timestamp": 1771085922776
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "photos.google.com",
+      "duration": 50777,
+      "endTime": 1771085999714,
+      "id": "1771085999714-0.7637541760092167",
+      "startTime": 1771085948937,
+      "timestamp": 1771085999714
+    },
+    {
+      "category": "communication",
+      "date": "2026-02-14",
+      "domain": "meet.google.com",
+      "duration": 37280,
+      "endTime": 1771086040894,
+      "id": "1771086040894-0.41549463196849534",
+      "startTime": 1771086003614,
+      "timestamp": 1771086040894
+    },
+    {
+      "category": "work",
+      "date": "2026-02-14",
+      "domain": "docs.google.com",
+      "duration": 14410,
+      "endTime": 1771086586979,
+      "id": "1771086586979-0.7713977656639713",
+      "startTime": 1771086572569,
+      "timestamp": 1771086586979
+    },
+    {
+      "category": "communication",
+      "date": "2026-02-14",
+      "domain": "mail.google.com",
+      "duration": 12755,
+      "endTime": 1771086599734,
+      "id": "1771086599734-0.1385608090843239",
+      "startTime": 1771086586979,
+      "timestamp": 1771086599734
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "google.com",
+      "duration": 12837,
+      "endTime": 1771086613171,
+      "id": "1771086613171-0.49762481097649947",
+      "startTime": 1771086600334,
+      "timestamp": 1771086613171
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "artsandculture.google.com",
+      "duration": 13033,
+      "endTime": 1771086626204,
+      "id": "1771086626205-0.26301270432452395",
+      "startTime": 1771086613171,
+      "timestamp": 1771086626205
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "ads.google.com",
+      "duration": 20205,
+      "endTime": 1771086646409,
+      "id": "1771086646409-0.13366344227558213",
+      "startTime": 1771086626204,
+      "timestamp": 1771086646409
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "books.google.com",
+      "duration": 37608,
+      "endTime": 1771086684017,
+      "id": "1771086684018-0.6484615295964175",
+      "startTime": 1771086646409,
+      "timestamp": 1771086684018
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "claude.ai",
+      "duration": 45369,
+      "endTime": 1771086729386,
+      "id": "1771086729386-0.5168645532947954",
+      "startTime": 1771086684017,
+      "timestamp": 1771086729386
+    },
+    {
+      "category": "other",
+      "date": "2026-02-14",
+      "domain": "google.com",
+      "duration": 27124,
+      "endTime": 1771087107937,
+      "id": "1771087107937-0.18980044715998312",
+      "startTime": 1771087080813,
+      "timestamp": 1771087107937
+    },
+    {
+      "category": "distraction",
+      "date": "2026-02-14",
+      "domain": "netflix.com",
+      "duration": 9355,
+      "endTime": 1771087117292,
+      "id": "1771087117292-0.05049392128941266",
+      "startTime": 1771087107937,
+      "timestamp": 1771087117292
+    }
+  ],
+  "stats": {
+    "totalTime": 556057,
+    "workTime": 14410,
+    "distractionTime": 166965,
+    "communicationTime": 50035,
+    "deepWorkTime": 0,
+    "switches": 20,
+    "focusScore": 2,
+    "deepWorkSessions": 0,
+    "pattern": "balanced",
+    "focusModeActive": true,
+    "focusModeEnd": 1771088601652,
+    "streakDays": 0,
+    "dailyGoal": 4,
+    "todaySessions": [
+      {
+        "category": "communication",
+        "date": "2026-02-14",
+        "domain": "meet.google.com",
+        "duration": 37280,
+        "endTime": 1771086040894,
+        "id": "1771086040894-0.41549463196849534",
+        "startTime": 1771086003614,
+        "timestamp": 1771086040894
+      },
+      {
+        "category": "work",
+        "date": "2026-02-14",
+        "domain": "docs.google.com",
+        "duration": 14410,
+        "endTime": 1771086586979,
+        "id": "1771086586979-0.7713977656639713",
+        "startTime": 1771086572569,
+        "timestamp": 1771086586979
+      },
+      {
+        "category": "communication",
+        "date": "2026-02-14",
+        "domain": "mail.google.com",
+        "duration": 12755,
+        "endTime": 1771086599734,
+        "id": "1771086599734-0.1385608090843239",
+        "startTime": 1771086586979,
+        "timestamp": 1771086599734
+      },
+      {
+        "category": "other",
+        "date": "2026-02-14",
+        "domain": "google.com",
+        "duration": 12837,
+        "endTime": 1771086613171,
+        "id": "1771086613171-0.49762481097649947",
+        "startTime": 1771086600334,
+        "timestamp": 1771086613171
+      },
+      {
+        "category": "other",
+        "date": "2026-02-14",
+        "domain": "artsandculture.google.com",
+        "duration": 13033,
+        "endTime": 1771086626204,
+        "id": "1771086626205-0.26301270432452395",
+        "startTime": 1771086613171,
+        "timestamp": 1771086626205
+      },
+      {
+        "category": "other",
+        "date": "2026-02-14",
+        "domain": "ads.google.com",
+        "duration": 20205,
+        "endTime": 1771086646409,
+        "id": "1771086646409-0.13366344227558213",
+        "startTime": 1771086626204,
+        "timestamp": 1771086646409
+      },
+      {
+        "category": "other",
+        "date": "2026-02-14",
+        "domain": "books.google.com",
+        "duration": 37608,
+        "endTime": 1771086684017,
+        "id": "1771086684018-0.6484615295964175",
+        "startTime": 1771086646409,
+        "timestamp": 1771086684018
+      },
+      {
+        "category": "other",
+        "date": "2026-02-14",
+        "domain": "claude.ai",
+        "duration": 45369,
+        "endTime": 1771086729386,
+        "id": "1771086729386-0.5168645532947954",
+        "startTime": 1771086684017,
+        "timestamp": 1771086729386
+      },
+      {
+        "category": "other",
+        "date": "2026-02-14",
+        "domain": "google.com",
+        "duration": 27124,
+        "endTime": 1771087107937,
+        "id": "1771087107937-0.18980044715998312",
+        "startTime": 1771087080813,
+        "timestamp": 1771087107937
+      },
+      {
+        "category": "distraction",
+        "date": "2026-02-14",
+        "domain": "netflix.com",
+        "duration": 9355,
+        "endTime": 1771087117292,
+        "id": "1771087117292-0.05049392128941266",
+        "startTime": 1771087107937,
+        "timestamp": 1771087117292
+      }
+    ]
+  },
+  "settings": {
+    "blockedSites": [
+      "youtube.com",
+      "netflix.com",
+      "twitch.tv",
+      "hulu.com",
+      "facebook.com",
+      "instagram.com",
+      "twitter.com",
+      "x.com",
+      "reddit.com",
+      "tiktok.com",
+      "pinterest.com",
+      "linkedin.com/feed",
+      "news.ycombinator.com",
+      "espn.com",
+      "cnn.com",
+      "bbc.com/news",
+      "amazon.com",
+      "ebay.com",
+      "aliexpress.com"
+    ],
+    "dailyGoal": 4,
+    "focusDuration": 25,
+    "focusModeActive": true,
+    "focusModeEnd": 1771088601652,
+    "nudgesEnabled": true,
+    "soundEnabled": true
+  }
+}
